@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Aşkıma Kavuşma Sayacı</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #1a0813 0%, #4a0d25 50%, #1a0813 100%);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.04);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 35px 25px;
+            border-radius: 24px;
+            text-align: center;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            letter-spacing: -0.5px;
+            background: linear-gradient(45deg, #ff758c, #ff7eb3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1row);
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        /* CSS Grid fix for safety */
+        .countdown-grid {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .time-box {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 15px 5px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .time-box .number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+            display: block;
+            line-height: 1.2;
+        }
+        .time-box .label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+            display: block;
+        }
+        .weekly-counter {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+            padding: 15px;
+            border-radius: 16px;
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: #ff758c;
+            display: inline-block;
+            width: 100%;
+        }
+        .heart-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            animation: pulse 1.5s infinite;
+            display: inline-block;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="heart-icon">❤️</div>
+    <h1>Aşkıma Kavuşma Sayacı</h1>
+    
+    <div class="countdown-grid">
+        <div class="time-box">
+            <span class="number" id="days">00</span>
+            <span class="label">Gün</span>
+        </div>
+        <div class="time-box">
+            <span class="number" id="hours">00</span>
+            <span class="label">Saat</span>
+        </div>
+        <div class="time-box">
+            <span class="number" id="minutes">00</span>
+            <span class="label">Dk</span>
+        </div>
+        <div class="time-box">
+            <span class="number" id="seconds">00</span>
+            <span class="label">Sn</span>
+        </div>
+    </div>
+
+    <div class="weekly-counter" id="weekly-text">
+        Yükleniyor...
+    </div>
+</div>
+
+<script>
+    // iPhone Safari uyumlu Date yapısı (Yıl, Ay-1, Gün, Saat, Dakika)
+    // 6 Aralık 2026 saat 00:00 hedefi için:
+    var targetDate = new Date(2026, 11, 6, 0, 0, 0);
+
+    function updateCountdown() {
+        var now = new Date();
+        var difference = targetDate.getTime() - now.getTime();
+
+        if (difference <= 0) {
+            document.querySelector('.countdown-grid').style.display = 'none';
+            document.getElementById('weekly-text').innerHTML = "Yolculuk Vakti Geldi! ✈️❤️";
+            document.querySelector('h1').innerText = "Kavuşma Vakti!";
+            return;
+        }
+
+        // Toplam zaman birimleri hesaplama
+        var totalSeconds = Math.floor(difference / 1000);
+        var totalMinutes = Math.floor(totalSeconds / 60);
+        var totalHours = Math.floor(totalMinutes / 60);
+        var days = Math.floor(totalHours / 24);
+
+        var hours = totalHours % 24;
+        var minutes = totalMinutes % 60;
+        var seconds = totalSeconds % 60;
+
+        // Haftalık sayaç hesaplaması
+        var weeks = Math.floor(days / 7);
+        var remainingDays = days % 7;
+
+        // Hücreleri güncelleme
+        document.getElementById('days').innerText = days < 10 ? '0' + days : days;
+        document.getElementById('hours').innerText = hours < 10 ? '0' + hours : hours;
+        document.getElementById('minutes').innerText = minutes < 10 ? '0' + minutes : minutes;
+        document.getElementById('seconds').innerText = seconds < 10 ? '0' + seconds : seconds;
+
+        // Haftalık metni güncelleme
+        var weeklyString = "";
+        if (weeks > 0) {
+            weeklyString += weeks + " Hafta ";
+        }
+        weeklyString += remainingDays + " Gün Kaldı";
+        document.getElementById('weekly-text').innerText = weeklyString;
+    }
+
+    // İlk çalıştırma ve her saniye güncelleme
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+</script>
+
+</body>
+</html>
